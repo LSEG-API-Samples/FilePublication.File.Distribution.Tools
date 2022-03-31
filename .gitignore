@@ -1,0 +1,11 @@
+
+file_dist_tools/metadata/
+file_dist_tools/token.txt
+file_dist_tools/log
+file_dist_tools/__pycache__
+file_dist_tools/current_user.json
+*.pyc
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/
+file_dist_tools/.DS_Store
+.DS_Store
