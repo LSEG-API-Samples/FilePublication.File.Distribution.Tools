@@ -11,9 +11,11 @@ Install the python and python libraries and start the run script
 python -m pip install -r requirements.txt
 ```
 3. Prepare your `bucket` and `package` in File Distribution
-4. Go to folder name `file_dist_tools` and open file `golbal.ini` and specify all information 
-    3.1` [RDP]` section specify your RDP credentials (If you don't know information please contact https://developers.refinitiv.com)
-    3.2 `[CFS_GLOBAL]` section specify your `bucketName` and `packageId`
+4. Go to folder name `file_dist_tools` and open file `golbal.ini` and specify all information
+
+    4.1` [RDP]` section specify your RDP credentials (If you don't know information please contact https://developers.refinitiv.com)
+
+    4.2 `[CFS_GLOBAL]` section specify your `bucketName` and `packageId`
 
 |Field name||Description         |Example
 |--------|-----------|-------------|-------------|
