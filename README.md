@@ -1,6 +1,8 @@
 # File Distribution Tools
 ## _File Publication Tool_ (Python)
-This tool use for File Distribution Publisher publish a file into File Distribution system.
+This tool is used for File Distribution Publisher publishing a file into File Distribution system. The picture below will show you what this tool does when you execute it on your local machine.
+![](overview_flow.png)
+
 
 ## Prerequisites
 File Publication Tool requires [python](https://www.python.org/ftp/python/3.8.8/Python-3.8.8.tgz)  v3.8.8 to run.
