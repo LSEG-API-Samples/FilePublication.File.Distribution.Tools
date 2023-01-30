@@ -4,7 +4,7 @@ import argparse
 import json
 
 file_distribution_url = "file-store"
-file_distribution_version = "beta3"
+file_distribution_version = "v1"
 
 from loggingFileDist import get_app_logger, get_error_logger
 from validator import validate_argument, validate_config, validate_global_config, GLOBAL_CONFIG_FILE
@@ -44,7 +44,7 @@ def publish_file(payload):
         while True:
             accessToken = rdpToken.getToken()
 
-            url = "{}/{}/{}/bulk".format(rdpToken.base_URL, file_distribution_url, file_distribution_version)
+            url = "{}/{}/{}/bulk-publish".format(rdpToken.base_URL, file_distribution_url, file_distribution_version)
 
             headers = {
                 "Authorization": "Bearer {}".format(accessToken),
@@ -101,7 +101,8 @@ def modify_file_request(user_request):
       "fileType": "file", 
        "storageLocation": {
             "url": "",
-            "@type": "s3"
+            "@type": "s3",
+            "roleArn": ""
       },
       "filename": "",
       "description": "",
@@ -113,6 +114,11 @@ def modify_file_request(user_request):
             file_request = copy.deepcopy(file_payload)
             file_request["storageLocation"]["url"] = file_input["s3url"]
             file_request["filename"] = file_input["filename"]
+
+            if "roleArn" in file_input:
+                file_request["storageLocation"]["roleArn"] = file_input["roleArn"]
+            else:
+                del file_request["storageLocation"]["roleArn"]
             
             if "description" in file_input:
                 file_request["description"] = file_input["description"]
@@ -128,6 +134,11 @@ def modify_file_request(user_request):
     else:
         file_payload["storageLocation"]["url"] = user_request["s3url"]
         file_payload["filename"] = user_request["filename"]
+
+        if "roleArn" in user_request:
+            file_payload["storageLocation"]["roleArn"] = user_request["roleArn"]
+        else:
+            del file_payload["storageLocation"]["roleArn"]
         
         if "description" in user_request:
             file_payload["description"] = user_request["description"]
@@ -155,6 +166,8 @@ def create_payload(user_request):
     }
 
     # Optional Field
+    if "rolearn" in user_request:
+        payload["rolearn"] = user_request["rolearn"]
     if "availablefrom" in user_request:
         payload["availableFrom"] = user_request["availablefrom"]
     if "availableto" in user_request:
@@ -262,6 +275,8 @@ if __name__ == "__main__":
     parser.add_argument("-fn", "--filename", help="spectify file name")
 
     parser.add_argument("-s3url", "--s3url", help="spectify file description")
+
+    parser.add_argument("-rn", "--rolearn", help="specify role arn for s3 file access")
 
     parser.add_argument("-a", "--attributes", help="spectify file-set attributes example DayOfWeek,product")
 

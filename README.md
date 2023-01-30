@@ -69,6 +69,7 @@ python publishFile.py -c config.ini
 |--filesetname|-fs| filesetName| `Required`|User-friendly name for this file set. Must be unique within the associated Bucket. `Limitation: minLength: 1, maxLength: 256 `|myfilesetname|
 |--filename|-fn| fileName| `Required`|Name of the file including the path `Limitation: minLength: 1, maxLength: 256 `|my-file|
 |--s3url|-s3url| s3url| `Required`|The AWS Encoded S3 Object URL to the associated File|https://s3.amazonaws.com/bucket/key.json|
+|--rolearn|-rn| roleArn | Optional| The IAM Role arn to allow S3 File access for CFS |arn:aws:iam::1234567890123:role/EdsCfsS3AccessRole|
 |--attributes|-a| attributes | Optional|Custom file attributes that can be used for query filters if indexed.|name=value,DayOfWeek=4,Product=CFS|
 |--contentfrom|-cf|contentFrom | Optional|Earliest date/time of the content within the file.|2022-03-20T11:47:11Z|
 |--contentto|-ct| contentTo|Optional|Latest date/time of the content within the file.|2032-03-20T11:47:11Z|

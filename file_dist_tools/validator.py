@@ -118,6 +118,10 @@ def validate_argument(args, user_request):
         user_request["attributes"] = attributes
 
     # Optional field
+    if args.rolearn is not None:
+        user_request["roleArn"] = args.rolearn
+
+    # Optional field
     if args.contentfrom is not None:
         # overide global config
         user_request["contentfrom"] = args.contentfrom
