@@ -115,8 +115,8 @@ def modify_file_request(user_request):
             file_request["storageLocation"]["url"] = file_input["s3url"]
             file_request["filename"] = file_input["filename"]
 
-            if "roleArn" in file_input:
-                file_request["storageLocation"]["roleArn"] = file_input["roleArn"]
+            if "rolearn" in file_input:
+                file_request["storageLocation"]["roleArn"] = file_input["rolearn"]
             else:
                 del file_request["storageLocation"]["roleArn"]
             
