@@ -16,7 +16,7 @@ GLOBAL_CONFIG_FILE = "global.ini"
 S3_URL_REGEX = "^https:\/\/(s3\.?[a-zA-Z0-9-]*|[a-zA-Z0-9-]*\.s3\.?[a-zA-Z0-9-]*|[" \
                "a-zA-Z0-9-]*\.mrap\.accesspoint\.s3-global)\.amazonaws\.com\/.*$"
 ROLEARN_REGEX = "^arn:aws:iam::[0-9]+:role\/.+$"
-CFS_FILES_FIELD_LIST = ["filetype", "description", "filesizeinbytes", "md5", "s3url", "rolearn"]
+CFS_FILES_FIELD_LIST = ["filename", "filetype", "description", "filesizeinbytes", "md5", "s3url", "rolearn"]
 
 
 # -----------------------------------------------------------
@@ -57,7 +57,7 @@ def validate_global_config(user_request):
 # Validate user input from configuration file (config.ini)
 # -----------------------------------------------------------
 def validate_config(config_file, user_request):
-    config = configparser.ConfigParser()
+    config = configparser.ConfigParser(allow_no_value=True)
     config.read(config_file)
 
     # Check Require field
@@ -74,15 +74,18 @@ def validate_config(config_file, user_request):
         raise InvalidConfigurationException(config_file, f"Please check [{CFS_FILE_KEY}], "
                                                          f"This tools support only 10 files per config")
 
-    column_list = map_column_list(cfs_file_config[0])
-    for file_name, values in cfs_file_config[1:]:
-        file_input = {"filename": file_name}
-        file_attributes = values.split(",")
-        try:
-            for i in range(0, len(column_list)):
-                field_name = column_list[i]
-                field_value = file_attributes[i].replace("\"", "")
+    column_list = map_column_list(cfs_file_config[0][0])
+    for key, value in cfs_file_config[1:]:
+        file_raw = key + ":" + value
+        # use regex to split comma value ignoring double quote values
+        file_list = re.split(r",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", file_raw)
+        file_input = {}
 
+        try:
+            file_name = file_list[column_list.index("filename")]
+            for i in range(0, len(file_list)):
+                field_name = column_list[i]
+                field_value = file_list[i].replace("\"", "")
                 validate_field_value(file_name, field_name, field_value)
                 # omit empty field value
                 if len(field_value) > 0:
@@ -94,15 +97,14 @@ def validate_config(config_file, user_request):
 
 
 def map_column_list(header_column):
-    print(header_column)
-    if header_column[0] != "filename":
-        print("TODO: throw error: incorrect input format")
-
-    columns = header_column[1].split(",")
+    columns = header_column.split(",")
     formatted_columns = list(map(lambda value: value.lower(), columns))
 
+    if "filename" not in formatted_columns:
+        raise InvalidConfigurationException(GLOBAL_CONFIG_FILE, "Required \"filename\" field is missing")
+
     if "s3url" not in formatted_columns:
-        print("TODO: throw error: required s3url field")
+        raise InvalidConfigurationException(GLOBAL_CONFIG_FILE, "Required \"s3url\" field is missing")
     return formatted_columns
 
 
@@ -164,18 +166,21 @@ def validate_argument(args, user_request):
     if args.description is not None:
         user_request["description"] = args.description
 
+    # Optional field
     if args.filesizeinbytes is not None:
         try:
-            user_request["filesizeinbytes"] = int(args.filesizeinbytes) # filesizeinbytes is optional field
-        except Exception as e:
-            app_logger.error(e, exc_info=True)
-            error_logger.error(e, exc_info=True)
-            raise Exception("ERROR: Please check 'fileSizeInBytes' value,  'fileSizeInBytes' should be number only")
+            user_request["filesizeinbytes"] = int(args.filesizeinbytes)
+        except ValueError:
+            raise InvalidFieldValueException(None, "filesizeinbytes", args.filesizeinbytes, "value should be numeric value")
 
 
 def validate_field_value(file_name, field_name, field_value):
     if field_name not in CFS_FILES_FIELD_LIST:
         raise UnrecognizedFieldException(field_name)
+
+    if field_name == "filename":
+        if len(field_value) < 1:
+            raise InvalidFieldValueException(file_name, field_name, field_value, "should not be empty")
 
     if field_name == "filesizeinbytes":
         try:
