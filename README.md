@@ -57,7 +57,17 @@ python publishFile.py -fs MyFileSetName -fn ExampleFile -s3url https://s3.amazon
 ```
 > **Note:**  This command publish a file with **required and optional arguments**, you see more argument and command description in [Help Command Description]
 
-4. Publish multiple files
+4. Publish a single file with file access role arn
+```sh
+python publishFile.py -fs <file-set name> -fn <file name> -s3url <s3url> -rn <rolearn>
+```
+Example:
+```sh
+python publishFile.py -fs MyFileSetName -fn ExampleFile -s3url https://s3.amazonaws.com/bucket/ExampleFile.csv -rn arn:aws:iam::123456789012:role/EdsCfsS3Access_role
+```
+> **Note:**  Please reference **ROLE-Based permission** section of **CFS User Guide** for detail of rolearn usage
+
+5. Publish multiple files
 ```sh
 python publishFile.py -c config.ini
 ```
