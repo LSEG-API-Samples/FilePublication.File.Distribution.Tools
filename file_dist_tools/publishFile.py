@@ -80,7 +80,8 @@ def publish_file(payload):
         app_logger.info("------------------- File Publication Result --------------------")
         print_json_format(json_response)
         app_logger.info("----------------------------------------------------------------")
-    if response.status_code >= 500:
+    # 429: too many request | 500: internal error
+    if response.status_code == 429 or response.status_code>= 500:
         app_logger.info("-------------------- File Publication Error --------------------")
         app_logger.info("Failed to publish file, retry to publish again")
         try:
